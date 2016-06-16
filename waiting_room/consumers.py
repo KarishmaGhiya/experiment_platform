@@ -16,20 +16,27 @@ def wait_connect(message):
     try:
 	log.debug('In the try block of ws_connect')#added by me
         #you can do a check for message path \wait if you want
-	title = "wait1"
-        wait_room = WaitRoom.objects.get(title=title)
-    
+	title = "wait2"
+        
+    	if WaitRoom.objects.filter(title=title).exists() :
+            #do nothing
+	    wait_room = WaitRoom.objects.get(title=title)
+	else :
+            wait_room = WaitRoom.objects.create(title=title)
+
     except WaitRoom.DoesNotExist:
         log.debug('ws room does not exist title=%s', title)
+	#WaitRoom.objects.create(title=title)
+	#log.debug('ws room new object created with title=%s',title)#You have to load the page when it is created
         return
 
     log.debug('wait connect room=%s client=%s:%s', 
         wait_room.title, message['client'][0], message['client'][1])
     #redis_conn.sadd("waitroom", message.reply_channel.name)
     redis_conn.sadd("waitroom",message['client'])
-    global client_current 
-    client_current = copy.deepcopy(message['client'])
-    log.debug(client_current)
+    #global client_current 
+    #client_current = copy.deepcopy(message['client'])
+    #log.debug(client_current)
     #client_current[0] = message['client'][0]
     #client_current[1] = message['client'][1]
     #redis_conn.setex("waitroom", 20, message['client'])
@@ -93,7 +100,7 @@ def wait_disconnect(message):
         title = message.channel_session['wait_room']
         wait_room = WaitRoom.objects.get(title=title)
 	log.debug('before redis delete..client_current= ')
-	log.debug(client_current)
+	#log.debug(client_current)
         #redis_conn.srem("waitroom", message['client'])
         client_pop = redis_conn.spop("waitroom")
 	log.debug('client_pop=')
