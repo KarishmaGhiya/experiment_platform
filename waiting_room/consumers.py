@@ -120,8 +120,11 @@ def wait_receive(message):
 		log.debug("3 objects created in crowd_members..check your database now")
 		#update the message m with the url to be directed onto == url -label== room(crowd-id) == url= chat/forum
 		#fetch the object for which crowd & look up the object if it has chat/forum
-		t = {}
-		t['message']='http://127.0.0.1:8000/chat/room'
+		t = {}		
+		if crowd.communication == '_forum':
+				t['message']='http://127.0.0.1:8000/forum/room'
+		elif crowd.communication == '_chat':
+				t['message']='http://127.0.0.1:8000/chat/room'
 		t['message'] += str(which_crowd)
 		Group('wait-'+title, channel_layer=message.channel_layer).send({'text': json.dumps(t)})
 	#log.debug(title)

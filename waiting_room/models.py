@@ -68,7 +68,7 @@ class CrowdManager(models.Manager):
 		#print A[0].num_B
 		i = 0	
 		for crowd in crowds:
-			log.debug(crowd.members.count)
+			
 			log.debug(crowd.size)
 			log.debug(cr[i].num_members)
 			if cr[i].num_members < crowd.size :
