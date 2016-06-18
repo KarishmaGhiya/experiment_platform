@@ -19,7 +19,10 @@ $(function() {
         
 	alert("inside onmessage");        
 	alert(message.data);
-	window.location.replace("http://127.0.0.1:8000/chat/quiet-sun-7662/");
+	var m = JSON.parse(message.data);
+	alert(m.message);
+	
+	window.location.replace(m.message);
         
               
     };

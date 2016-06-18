@@ -1,7 +1,7 @@
 import json
 from channels import Channel
 import copy
-from .models import WaitRoom, Message
+from .models import WaitRoom, Message, Crowd, Crowd_Members
 import re
 import json
 import logging
@@ -86,7 +86,44 @@ def wait_receive(message):
 	log.debug(json.dumps(m.as_dict()))
 	# See above for the note about Group
         if cnt >= 3:
-		Group('wait-'+title, channel_layer=message.channel_layer).send({'text': json.dumps(m.as_dict())})
+		#check crowd id of empty crowd
+		which_crowd = Crowd.objects.Crowd_which_assign()
+
+
+
+		#CHAT_COMMUNICATION = '_chat'
+		#FORUM_COMMUNICATION = '_forum'
+		#crowds = Crowd.objects.all()
+		#which_crowd = 0
+		
+		
+
+
+
+		log.debug("which_crowd=%d",which_crowd)
+		crowd =  Crowd.objects.get(id = which_crowd)
+		# 3 members to insert in crowd members //-cohort-id logic-so it's unique for each cohort--function that returns max cohort in the table & increment that
+		#value & insert it into the table-- also take into account of inserting 1st cohort
+		#crowd_id = which_crowd
+		#c = Crowd_Members(crowd_id = which_crowd,worker_id='WorkerId1',cohort_id=1)
+		#c.save()
+		c = {}
+		c['crowd_id'] = crowd
+		c['worker_id'] = 'WorkerId1'
+		c['cohort_id'] = 1
+		
+		crowd.members.create(**c)
+		c['worker_id'] = 'Worker2'
+		crowd.members.create(**c)
+		c['worker_id'] = 'Worker3'
+		crowd.members.create(**c)
+		log.debug("3 objects created in crowd_members..check your database now")
+		#update the message m with the url to be directed onto == url -label== room(crowd-id) == url= chat/forum
+		#fetch the object for which crowd & look up the object if it has chat/forum
+		t = {}
+		t['message']='http://127.0.0.1:8000/chat/room'
+		t['message'] += str(which_crowd)
+		Group('wait-'+title, channel_layer=message.channel_layer).send({'text': json.dumps(t)})
 	#log.debug(title)
 	#log.debug(message.channel_layer)
 	log.debug("after if & group")
